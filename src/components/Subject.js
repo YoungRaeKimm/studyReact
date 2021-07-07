@@ -4,7 +4,10 @@ class Subject extends Component{//하나의 최상위 태그가 있어야한다.
   render(){
     return (
       <header>
-        <h1>{this.props.title}</h1>
+        <h1><a href="/" onClick={function(e){
+          e.preventDefault();
+          this.props.onChangePage();
+        }.bind(this)}>{this.props.title}</a></h1>
         {this.props.sub}
       </header>
     );
