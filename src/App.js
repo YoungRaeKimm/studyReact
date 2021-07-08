@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReadContent from "./components/ReadContent"
 import CreateContent from "./components/CreateContent"
+import UpdateContent from "./components/UpdateContent"
 import Subject from "./components/Subject"
 import TOC from "./components/TOC";
 import Control from "./components/Control"
@@ -22,7 +23,18 @@ class App extends Component {//하나의 최상위 태그가 있어야한다. �
             ]
         }
     }
-    render(){
+    getReadContent(){
+        let i=0;
+        while(i<this.state.contents.length){
+            let data = this.state.contents[i];
+            if(data.id === this.state.selected_content_id){
+                return data;
+                break;
+            }
+            i++;
+        }
+    }
+    getContent(){
         let _title, _desc, _article =null;
         if(this.state.mode === 'welcome'){
           _title = this.state.welcome.title;
@@ -30,32 +42,44 @@ class App extends Component {//하나의 최상위 태그가 있어야한다. �
           _article = <ReadContent title={_title} desc={_desc}></ReadContent>
         }
         else if(this.state.mode ==='read'){
-            let i=0;
-            while(i<this.state.contents.length){
-                let data = this.state.contents[i];
-                if(data.id === this.state.selected_content_id){
-                    _title = data.title;
-                    _desc = data.desc;
-                    break;
-                }
-                i++;
-            }
-            _article = <ReadContent title={_title} desc={_desc}></ReadContent>
+            var _content = this.getReadContent();
+            _article = <ReadContent title={_content.title} desc={_content.desc}></ReadContent>
         }//아래서 bind 와 setState 사용함.
         else if(this.state.mode === 'create'){
             _article = <CreateContent onSubmit={function(_title, _desc){
                 this.max_content_id = this.max_content_id + 1;
-                var newContents = Array.from(this.state.contents);
-                newContents.push({id:this.max_content_id,
-                title:_title,
-                desc:_desc
-                });
+                var _contents = Array.from(this.state.contents);
+                _contents.push({id:this.max_content_id, title:_title, desc:_desc});
+
                 this.setState({
-                    contents:newContents
+                    contents:_contents,
+                    mode:'read',
+                    selected_content_id:this.max_content_id
                 });
             }.bind(this)}></CreateContent>
         }
-
+        else if(this.state.mode === 'update'){
+            _content = this.getReadContent();
+            _article = <UpdateContent data={_content} onSubmit={
+                function(_id, _title, _desc){
+                    var _contents = Array.from(this.state.contents);
+                    var i=0;
+                    while(i < _contents.length){
+                        if(_contents[i].id === _id){
+                            _contents[i] = {id:_id, title:_title, desc:_desc};
+                            break;
+                        }
+                        i=i+1;
+                    }
+                    this.setState({
+                        contents:_contents,
+                        mode:'read'
+                    });
+            }.bind(this)}></UpdateContent>
+        }
+        return _article;
+    }
+    render(){
         return(
             <div className="App">
                 <Subject
@@ -80,7 +104,7 @@ class App extends Component {//하나의 최상위 태그가 있어야한다. �
                         mode:_mode
                     });
                 }.bind(this)}></Control>
-                {_article}
+                {this.getContent()}
             </div>
         );
     }
