@@ -9,8 +9,9 @@ import './App.css';
 class App extends Component {//하나의 최상위 태그가 있어야한다. 여기선 div
     constructor(props){     // constructor에서만 setState 안써도됨. 나머지는 써야함.
         super(props);
+        this.max_content_id = 3;
         this.state = {
-            mode : 'read',
+            mode : 'create',
             selected_content_id:2,
             subject:{title:'WEB', sub:'World Wide Web!'},
             welcome :{title:'Welcome', desc:"Hello React"},
@@ -42,7 +43,15 @@ class App extends Component {//하나의 최상위 태그가 있어야한다. �
             _article = <ReadContent title={_title} desc={_desc}></ReadContent>
         }//아래서 bind 와 setState 사용함.
         else if(this.state.mode === 'create'){
-            _article = <CreateContent></CreateContent>
+            _article = <CreateContent onSubmit={function(_title, _desc){
+                this.max_content_id = this.max_content_id + 1;
+                var _contents = this.state.contents.concat(
+                    {id:this.max_content_id, title:_title, desc:_desc}
+                )
+                this.setState({
+                    contents:_contents
+                });
+            }.bind(this)}></CreateContent>
         }
 
         return(
@@ -63,6 +72,7 @@ class App extends Component {//하나의 최상위 태그가 있어야한다. �
                 }.bind(this)}
                 data={this.state.contents}
                 ></TOC>
+
                 <Control onChangeMode={function(_mode){
                     this.setState({
                         mode:_mode
