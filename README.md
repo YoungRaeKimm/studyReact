@@ -1,3 +1,6 @@
+# 인프런의 생활코딩 - React 강의를 보면서 구현한 것들 입니다.
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
